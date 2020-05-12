@@ -1,0 +1,26 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:3001/eureka/
+
+server:
+  port: 3000
+  
+spring:
+  application:
+    name: smc-gateway
+
+zuul:
+  routes:
+    api-auth-service:
+      path: /api/**
+      serviceId: smc-auth-service
+    api-company-service:
+      path: /api/company/**
+      serviceId: smc-company-service
+    api-stock-service:
+      path: /api/stock/**
+      serviceId: smc-stock-service
+    api-upload-service:
+      path: /api/upload/**
+      serviceId: smc-upload-service
