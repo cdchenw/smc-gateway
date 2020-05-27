@@ -1,5 +1,10 @@
 eureka:
+  instance:
+    lease-expiration-duration-in-seconds: 30
+    lease-renewal-interval-in-seconds: 10
   client:
+    registerWithEureka: false  #alertive can disable the gate way regist in eurek
+    fetchRegistry: true
     serviceUrl:
       defaultZone: http://localhost:3001/eureka/
 
@@ -13,14 +18,17 @@ spring:
 zuul:
   routes:
     api-auth-service:
-      path: /api/**
-      serviceId: smc-auth-service
-    api-company-service:
-      path: /api/company/**
-      serviceId: smc-company-service
+      path: /api/authenticate
+      serviceId: SMC-AUTH-SERVICE
+    smc-company-service:
+      path: /**/company/**
+      serviceId: SMC-COMPANY-SERVICE
     api-stock-service:
-      path: /api/stock/**
-      serviceId: smc-stock-service
+      path: /**/stock/**
+      serviceId: SMC-STOCK-SERVICE
     api-upload-service:
-      path: /api/upload/**
-      serviceId: smc-upload-service
+      path: /**/upload/**
+      serviceId: SMC-UPLOAD-SERVICE
+ribbon:
+  eureka:
+    enabled: true

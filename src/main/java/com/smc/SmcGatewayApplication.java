@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 import com.smc.gateway.filter.TokenAuthenticationFilter;
 
@@ -20,6 +21,11 @@ public class SmcGatewayApplication {
 	@Bean
 	public TokenAuthenticationFilter simpleFilter() {
 		return new TokenAuthenticationFilter();
+	}
+	
+	@Bean
+	public RestTemplate restTemplate() {
+	    return new RestTemplate();
 	}
 
 }
