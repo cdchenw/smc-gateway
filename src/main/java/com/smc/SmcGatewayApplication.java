@@ -22,10 +22,10 @@ public class SmcGatewayApplication {
 	public TokenAuthenticationFilter simpleFilter() {
 		return new TokenAuthenticationFilter();
 	}
-	
+
 	@Bean
 	public RestTemplate restTemplate() {
-	    return new RestTemplate();
+		return new RestTemplate();
 	}
 
 }
