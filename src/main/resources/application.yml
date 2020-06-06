@@ -1,11 +1,11 @@
 eureka:
   instance:
-    lease-expiration-duration-in-seconds: 30
-    lease-renewal-interval-in-seconds: 10
+#    lease-expiration-duration-in-seconds: 60  #no need to set rexpiration for gateway.
+    lease-renewal-interval-in-seconds: 5
   client:
-    registerWithEureka: false  #alertive can disable the gate way regist in eurek
-    fetchRegistry: true
-    serviceUrl:
+    register-with-eureka: false #alertive can disable the gate way regist in eurek
+    fetch-registry: true
+    service-url:
       defaultZone: http://localhost:3001/eureka/
 
 server:
@@ -16,10 +16,8 @@ spring:
     name: smc-gateway
 
 zuul:
+  sensitive-headers:    #keep empty to avoid missing Cookie, Authorization in header.
   routes:
-    api-auth-service:
-      path: /api/authenticate
-      serviceId: SMC-AUTH-SERVICE
     smc-company-service:
       path: /**/company/**
       serviceId: SMC-COMPANY-SERVICE
@@ -29,6 +27,11 @@ zuul:
     api-upload-service:
       path: /**/upload/**
       serviceId: SMC-UPLOAD-SERVICE
+    api-auth-service:
+      path: /**
+#      path: /api/authenticate
+#      path: /api/currentuser
+      serviceId: SMC-AUTH-SERVICE
 ribbon:
   eureka:
     enabled: true

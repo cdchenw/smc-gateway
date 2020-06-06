@@ -5,12 +5,19 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
+import com.smc.model.User;
 
 public class TokenAuthenticationFilter extends ZuulFilter {
 	private static Logger logger = LoggerFactory.getLogger(TokenAuthenticationFilter.class);
@@ -29,7 +36,7 @@ public class TokenAuthenticationFilter extends ZuulFilter {
 	    
 		String url = request.getRequestURL().toString();
 		
-	    if(url.endsWith("/api/authenticate")){
+	    if(url.endsWith("/api/authenticate") || url.endsWith("/api/currentuser")){
 			return null;
 		}
 	    
@@ -41,15 +48,23 @@ public class TokenAuthenticationFilter extends ZuulFilter {
 	    	ctx.setResponseBody("Authorization token is null");
 	    	ctx.setResponseStatusCode(401);
 	    }else {
+	    	HttpHeaders headers = new HttpHeaders();
+	    	headers.setContentType(MediaType.APPLICATION_JSON);
+	    	headers.set("Authorization", userToken);
+
+	    	HttpEntity<String> entity = new HttpEntity<>(null, headers);
+
 	    	//call get current user by token header api, if can get the user, pass the JWT token parser check
-	    	Object user = restTemplate.getForObject("/api/currentuser", Object.class);
-	    	if (user == null) {
+	    	ResponseEntity<User> userResponse = restTemplate.exchange("http://localhost:3002/api/currentuser", HttpMethod.GET, entity, User.class);
+	    	
+	    	if (userResponse.getStatusCode()!=HttpStatus.OK) {
 				logger.info("The user is null...");
 				ctx.setSendZuulResponse(false);
 				ctx.setResponseStatusCode(401);
 				ctx.setResponseBody("Invalid token or token has been expired");
 			}else{
-				logger.info("Login user: " + user);
+				User user = userResponse.getBody();
+				logger.info("Login user: " + user.getEmail());
 				request.setAttribute("currentuser", user);
 			}
 	    }
