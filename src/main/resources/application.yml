@@ -16,13 +16,20 @@ spring:
     name: smc-gateway
 
 zuul:
+  host:
+    connect-timeout-millis: 30000
+    socket-timeout-millis: 30000  #default 10ms
+    max-total-connections: 200  #default
+    max-per-route-connections: 20  #default
+    time-unit: MILLISECONDS  #default
+    time-to-live: 30000
   sensitive-headers:    #keep empty to avoid missing Cookie, Authorization in header.
   routes:
     smc-company-service:
       path: /**/company/**
       serviceId: SMC-COMPANY-SERVICE
     api-stock-service:
-      path: /**/stock/**
+      path: /**/stockprice/**
       serviceId: SMC-STOCK-SERVICE
     api-upload-service:
       path: /**/upload/**
@@ -32,6 +39,7 @@ zuul:
 #      path: /api/authenticate
 #      path: /api/currentuser
       serviceId: SMC-AUTH-SERVICE
-ribbon:
-  eureka:
-    enabled: true
+#ribbon:
+#  ReadTimeout: 60000
+#  eureka:
+#    enabled: true
