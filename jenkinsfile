@@ -1,0 +1,24 @@
+pipeline {
+   agent any
+
+   stages {
+      stage('pull code') {
+         steps {
+            checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-fsd-up', url: 'https://github.com/cdchenw/smc-gateway.git']]])
+         }
+      }
+      stage('build code') {
+         steps {
+            sh "mvn clean install -Dmaven.test.skip=true"
+         }
+      }
+      stage('deployee code') {
+         steps {
+            sh "pwd"
+            sh "mv ./target/smc-gateway-5.0.0.jar ./"
+            sh "docker build -t smcgateway ."
+            sh "docker run -d -p 3003:3003 smcgateway"
+         }
+      }
+   }
+}
